@@ -2,7 +2,7 @@
 
 Small teams often receive messy CSV, Excel, JSON, or API data before reporting. This project shows how to turn those inputs into a repeatable Python workflow that validates, cleans, exports, and documents the data quality of each run.
 
-This is a practical GitHub portfolio project for lightweight data cleaning, validation, reporting automation, and ETL work. It is intentionally small enough to understand, run, test, and adapt.
+It is designed as a practical GitHub portfolio project for lightweight data cleaning, validation, reporting automation, and ETL work. The goal is not to build an enterprise data platform, but to demonstrate a small workflow that can be understood, run, tested, and adapted.
 
 ## What problem this solves
 
@@ -15,6 +15,7 @@ Typical issues include:
 - missing values and duplicate rows;
 - invalid email, date, or number formats;
 - nested JSON that must become reporting-ready tables;
+- API-style JSON responses that need to be flattened and exported;
 - manual Excel cleanup repeated every week;
 - no data quality report for handoff.
 
@@ -31,7 +32,7 @@ This starter workflow can:
 - export cleaned CSV output;
 - export cleaned data to SQLite by default;
 - optionally export to PostgreSQL;
-- generate a Markdown and JSON data quality report;
+- generate Markdown and JSON data quality reports;
 - run through a CLI, pytest tests, and Docker.
 
 ## Example workflow
@@ -83,38 +84,76 @@ data-quality-etl-starter/
 ## Quick start
 
 ```bash
-git clone https://github.com/<your-username>/data-quality-etl-starter.git
+git clone https://github.com/OnerGit/data-quality-etl-starter.git
 cd data-quality-etl-starter
 python -m venv .venv
-source .venv/bin/activate  # Windows: .venv\Scripts\activate
-pip install -r requirements.txt
 ```
+
+Activate the virtual environment:
+
+```bash
+# macOS / Linux
+source .venv/bin/activate
+```
+
+```powershell
+# Windows PowerShell
+.venv\Scripts\activate
+```
+
+Install dependencies and the local package:
+
+```bash
+pip install -r requirements.txt
+pip install -e .
+```
+
+The editable install step is recommended because the source code uses a `src/` layout.
 
 ## Run with sample CSV
 
 ```bash
-python -m dq_etl_starter.cli run   --input data/input/messy_customers.csv   --input-type csv   --schema data/expected/customer_schema.json   --output-dir data/output   --db-target sqlite   --table-name cleaned_customers
+python -m dq_etl_starter.cli run \
+  --input data/input/messy_customers.csv \
+  --input-type csv \
+  --schema data/expected/customer_schema.json \
+  --output-dir data/output/csv \
+  --db-target sqlite \
+  --table-name cleaned_customers
 ```
 
 Expected outputs:
 
 ```text
-data/output/cleaned_customers.csv
-data/output/etl_output.sqlite
-data/output/quality_report.md
-data/output/quality_report.json
+data/output/csv/cleaned_customers.csv
+data/output/csv/etl_output.sqlite
+data/output/csv/quality_report.md
+data/output/csv/quality_report.json
 ```
 
 ## Run with sample Excel
 
 ```bash
-python -m dq_etl_starter.cli run   --input data/input/messy_orders.xlsx   --input-type excel   --schema data/expected/order_schema.json   --output-dir data/output   --db-target sqlite   --table-name cleaned_orders
+python -m dq_etl_starter.cli run \
+  --input data/input/messy_orders.xlsx \
+  --input-type excel \
+  --schema data/expected/order_schema.json \
+  --output-dir data/output/excel \
+  --db-target sqlite \
+  --table-name cleaned_orders
 ```
 
 ## Run with nested JSON
 
 ```bash
-python -m dq_etl_starter.cli run   --input data/input/nested_customers.json   --input-type json   --records-path data.customers   --schema data/expected/customer_schema.json   --output-dir data/output   --db-target sqlite   --table-name cleaned_customers_json
+python -m dq_etl_starter.cli run \
+  --input data/input/nested_customers.json \
+  --input-type json \
+  --records-path data.customers \
+  --schema data/expected/customer_schema.json \
+  --output-dir data/output/json \
+  --db-target sqlite \
+  --table-name cleaned_customers_json
 ```
 
 ## Run with mock API data
@@ -122,7 +161,14 @@ python -m dq_etl_starter.cli run   --input data/input/nested_customers.json   --
 This project does not call a real external API in v0.1. The mock API file simulates a JSON response so the workflow stays reproducible and does not require API keys.
 
 ```bash
-python -m dq_etl_starter.cli run   --input data/input/mock_api_orders.json   --input-type mock-api   --records-path data.orders   --schema data/expected/order_schema.json   --output-dir data/output   --db-target sqlite   --table-name cleaned_api_orders
+python -m dq_etl_starter.cli run \
+  --input data/input/mock_api_orders.json \
+  --input-type mock-api \
+  --records-path data.orders \
+  --schema data/expected/order_schema.json \
+  --output-dir data/output/mock_api \
+  --db-target sqlite \
+  --table-name cleaned_api_orders
 ```
 
 ## Data quality report
@@ -138,6 +184,8 @@ The workflow generates a Markdown report with:
 - unexpected columns;
 - validation issues;
 - output files.
+
+The `Row` value in the validation report refers to the source file line number for CSV-style inputs. This includes the header row. For example, if the raw CSV has one header line and five data rows, a warning on `Row 6` points to the fifth data record in the source file.
 
 ## Pydantic schema models
 
@@ -158,7 +206,7 @@ The cleaning itself remains DataFrame-based because freelance CSV, Excel, JSON, 
 SQLite is the default database target because it is local, portable, and easy to inspect.
 
 ```bash
-sqlite3 data/output/etl_output.sqlite
+sqlite3 data/output/csv/etl_output.sqlite
 .tables
 SELECT * FROM cleaned_customers LIMIT 5;
 ```
@@ -176,7 +224,14 @@ docker compose up -d postgres
 Run export:
 
 ```bash
-DATABASE_URL=postgresql+psycopg://dq_user:dq_password@localhost:5432/dq_demo python -m dq_etl_starter.cli run   --input data/input/messy_customers.csv   --input-type csv   --schema data/expected/customer_schema.json   --output-dir data/output   --db-target postgres   --table-name cleaned_customers
+DATABASE_URL=postgresql+psycopg://dq_user:dq_password@localhost:5432/dq_demo \
+python -m dq_etl_starter.cli run \
+  --input data/input/messy_customers.csv \
+  --input-type csv \
+  --schema data/expected/customer_schema.json \
+  --output-dir data/output/postgres \
+  --db-target postgres \
+  --table-name cleaned_customers
 ```
 
 ## Run tests
@@ -192,9 +247,45 @@ docker build -t data-quality-etl-starter .
 docker run --rm -v "${PWD}/data/output:/app/data/output" data-quality-etl-starter
 ```
 
+On Windows PowerShell, use the same command:
+
+```powershell
+docker run --rm -v "${PWD}/data/output:/app/data/output" data-quality-etl-starter
+```
+
+## Screenshots
+
+### Raw messy data
+
+![Raw messy data](screenshots/01_raw_messy_data.png)
+
+### CLI workflow run
+
+![CLI run](screenshots/02_cli_run.png)
+
+### Data quality report
+
+![Quality report](screenshots/03_quality_report.png)
+
+### Cleaned output
+
+![Cleaned output](screenshots/04_cleaned_output.png)
+
+### Passing tests
+
+![Pytest pass](screenshots/05_pytest_pass.png)
+
+### Docker run
+
+![Docker run](screenshots/06_docker_run.png)
+
+### Nested JSON flattened output
+
+![JSON flatten output](screenshots/07_json_flatten_output.png)
+
 ## Optional FastAPI layer
 
-FastAPI is intentionally not part of the v0.1 core. The v0.3 layer can add endpoints such as:
+FastAPI is intentionally not part of the v0.1 core. A later v0.3 layer can add endpoints such as:
 
 - `GET /health`
 - `POST /upload`
@@ -202,26 +293,6 @@ FastAPI is intentionally not part of the v0.1 core. The v0.3 layer can add endpo
 - `GET /report/{run_id}`
 
 The CLI workflow remains the source of truth.
-
-## Screenshots
-
-Recommended screenshot sequence:
-
-1. raw messy data;
-2. CLI run;
-3. quality report;
-4. cleaned output;
-5. pytest pass;
-6. Docker run;
-7. optional PostgreSQL export;
-8. optional Swagger UI;
-9. optional `/validate` response.
-
-See `docs/workflow.md` for the screenshot story.
-
-## Troubleshooting
-
-See `docs/troubleshooting.md`.
 
 ## What this project is not
 
@@ -241,6 +312,14 @@ This project maps to common freelance tasks such as:
 - lightweight ETL;
 - export to SQLite or PostgreSQL;
 - preparing cleaner data for dashboards, analytics, or APIs.
+
+## Documentation
+
+- [Workflow notes](docs/workflow.md)
+- [Pydantic schema design](docs/pydantic-schema.md)
+- [Optional PostgreSQL export](docs/postgres.md)
+- [Troubleshooting](docs/troubleshooting.md)
+- [Upwork portfolio note](docs/upwork-portfolio-note.md)
 
 ## License
 

@@ -13,3 +13,14 @@ The project includes a CLI workflow, sample input/output files, pytest tests, Do
 ## Proposal reference sentence
 
 I have a small reference project that demonstrates a similar workflow: ingest messy CSV/API data, validate it with explicit schema rules, clean it, export a reporting-ready dataset to CSV or a database, and generate a clear data quality report.
+
+## Client work this maps to
+
+- API to CSV workflows
+- CSV and Excel cleanup
+- JSON to CSV conversion
+- Data validation and quality reporting
+- Reporting automation
+- Lightweight ETL
+- SQLite or PostgreSQL export
+- Preparing cleaner data for dashboards, analytics, or API services
