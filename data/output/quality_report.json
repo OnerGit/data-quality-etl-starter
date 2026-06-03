@@ -1,0 +1,91 @@
+{
+  "dataset_name": "customers",
+  "input_path": "data/input/messy_customers.csv",
+  "input_type": "csv",
+  "table_name": "cleaned_customers",
+  "row_count_raw": 5,
+  "row_count_cleaned": 4,
+  "column_count": 6,
+  "column_names": [
+    "customer_id",
+    "full_name",
+    "email",
+    "signup_date",
+    "country",
+    "revenue"
+  ],
+  "expected_columns": [
+    "customer_id",
+    "full_name",
+    "email",
+    "signup_date",
+    "country",
+    "revenue"
+  ],
+  "missing_expected_columns": [],
+  "unexpected_columns": [],
+  "missing_values_by_column": {
+    "customer_id": 0,
+    "full_name": 0,
+    "email": 1,
+    "signup_date": 0,
+    "country": 0,
+    "revenue": 1
+  },
+  "missing_value_ratio_by_column": {
+    "customer_id": 0.0,
+    "full_name": 0.0,
+    "email": 0.2,
+    "signup_date": 0.0,
+    "country": 0.0,
+    "revenue": 0.2
+  },
+  "duplicate_row_count": 1,
+  "duplicate_row_ratio": 0.2,
+  "issues": [
+    {
+      "severity": "warning",
+      "code": "MISSING_REQUIRED_VALUE",
+      "message": "Column 'email' has a missing required value.",
+      "column": "email",
+      "row_number": 3,
+      "value": null
+    },
+    {
+      "severity": "warning",
+      "code": "INVALID_EMAIL",
+      "message": "Value 'bad-email' is not a valid email format.",
+      "column": "email",
+      "row_number": 4,
+      "value": "bad-email"
+    },
+    {
+      "severity": "warning",
+      "code": "INVALID_EMAIL",
+      "message": "Value 'bad-email' is not a valid email format.",
+      "column": "email",
+      "row_number": 6,
+      "value": "bad-email"
+    },
+    {
+      "severity": "warning",
+      "code": "INVALID_DATE",
+      "message": "Value 'not-a-date' cannot be parsed as a date.",
+      "column": "signup_date",
+      "row_number": 5,
+      "value": "not-a-date"
+    },
+    {
+      "severity": "warning",
+      "code": "INVALID_NUMBER",
+      "message": "Value 'not-a-number' cannot be parsed as a number.",
+      "column": "revenue",
+      "row_number": 5,
+      "value": "not-a-number"
+    }
+  ],
+  "output_files": {
+    "cleaned_csv": "data/output/cleaned_customers.csv",
+    "sqlite": "data/output/etl_output.sqlite"
+  }
+}

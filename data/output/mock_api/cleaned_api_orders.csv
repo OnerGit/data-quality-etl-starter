@@ -1,0 +1,3 @@
+order_id,order_date,amount,customer_id,customer_email,shipping_country
+A100,2024-06-01,180.00,C001,alice@example.com,United States
+A101,06/02/2024,,C002,bad-api-email,United Kingdom

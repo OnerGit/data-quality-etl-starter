@@ -1,0 +1,3 @@
+customer_id,full_name,profile_email,profile_signup_date,address_country,metrics_revenue
+C010,Eva Wong,eva@example.com,2024-02-10,Singapore,500.0
+C011,Frank Moore,wrong-email,bad-date,US,

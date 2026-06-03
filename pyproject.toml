@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "data-quality-etl-starter"
+version = "0.1.0"
+description = "A small Python data quality ETL starter for messy CSV, Excel, JSON, and mock API data."
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+authors = [{name = "Bob Oner"}]
+dependencies = [
+    "pandas>=2.2",
+    "pydantic>=2.7",
+    "openpyxl>=3.1",
+    "SQLAlchemy>=2.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0"]
+postgres = ["psycopg[binary]>=3.2"]
+
+[project.scripts]
+dq-etl = "dq_etl_starter.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]

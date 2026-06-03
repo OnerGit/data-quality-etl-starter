@@ -1,0 +1,4 @@
+order_id,customer_id,order_date,amount,status
+O1001,C001,2024-05-01,250.0,paid
+O1002,C002,05/03/2024,,pending
+O1003,C003,bad-date,99.9,paid

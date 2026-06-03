@@ -1,0 +1,63 @@
+{
+  "dataset_name": "orders",
+  "input_path": "data\\input\\messy_orders.xlsx",
+  "input_type": "excel",
+  "table_name": "cleaned_orders",
+  "row_count_raw": 4,
+  "row_count_cleaned": 3,
+  "column_count": 5,
+  "column_names": [
+    "order_id",
+    "customer_id",
+    "order_date",
+    "amount",
+    "status"
+  ],
+  "expected_columns": [
+    "order_id",
+    "customer_id",
+    "order_date",
+    "amount",
+    "status"
+  ],
+  "missing_expected_columns": [],
+  "unexpected_columns": [],
+  "missing_values_by_column": {
+    "order_id": 0,
+    "customer_id": 0,
+    "order_date": 0,
+    "amount": 1,
+    "status": 0
+  },
+  "missing_value_ratio_by_column": {
+    "order_id": 0.0,
+    "customer_id": 0.0,
+    "order_date": 0.0,
+    "amount": 0.25,
+    "status": 0.0
+  },
+  "duplicate_row_count": 1,
+  "duplicate_row_ratio": 0.25,
+  "issues": [
+    {
+      "severity": "warning",
+      "code": "INVALID_DATE",
+      "message": "Value 'bad-date' cannot be parsed as a date.",
+      "column": "order_date",
+      "row_number": 4,
+      "value": "bad-date"
+    },
+    {
+      "severity": "warning",
+      "code": "INVALID_DATE",
+      "message": "Value 'bad-date' cannot be parsed as a date.",
+      "column": "order_date",
+      "row_number": 5,
+      "value": "bad-date"
+    }
+  ],
+  "output_files": {
+    "cleaned_csv": "data\\output\\excel\\cleaned_orders.csv",
+    "sqlite": "data\\output\\excel\\etl_output.sqlite"
+  }
+}

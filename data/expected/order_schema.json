@@ -1,0 +1,42 @@
+{
+  "dataset_name": "orders",
+  "expected_columns": [
+    "order_id",
+    "customer_id",
+    "order_date",
+    "amount",
+    "status"
+  ],
+  "column_rules": [
+    {
+      "name": "order_id",
+      "dtype": "string",
+      "required": true,
+      "allow_missing": false
+    },
+    {
+      "name": "customer_id",
+      "dtype": "string",
+      "required": false,
+      "allow_missing": true
+    },
+    {
+      "name": "customer_email",
+      "dtype": "email",
+      "required": false,
+      "allow_missing": true
+    },
+    {
+      "name": "order_date",
+      "dtype": "date",
+      "required": false,
+      "allow_missing": true
+    },
+    {
+      "name": "amount",
+      "dtype": "number",
+      "required": false,
+      "allow_missing": true
+    }
+  ]
+}

@@ -1,0 +1,5 @@
+customer_id,full_name,email,signup_date,country,revenue
+C001,Alice Chen,alice@example.com,2024-01-03,United States,1200.50
+C002,Bob Smith,,03/15/2024,United States,
+C003,Carol Tan,bad-email,2024/04/18,Singapore,800
+C004,David Lee,david@example.com,not-a-date,United Kingdom,not-a-number

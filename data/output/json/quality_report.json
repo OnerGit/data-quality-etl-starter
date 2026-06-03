@@ -1,0 +1,133 @@
+{
+  "dataset_name": "customers",
+  "input_path": "data\\input\\nested_customers.json",
+  "input_type": "json",
+  "table_name": "cleaned_customers_json",
+  "row_count_raw": 2,
+  "row_count_cleaned": 2,
+  "column_count": 6,
+  "column_names": [
+    "customer_id",
+    "full_name",
+    "profile_email",
+    "profile_signup_date",
+    "address_country",
+    "metrics_revenue"
+  ],
+  "expected_columns": [
+    "customer_id",
+    "full_name",
+    "email",
+    "signup_date",
+    "country",
+    "revenue"
+  ],
+  "missing_expected_columns": [
+    "country",
+    "email",
+    "revenue",
+    "signup_date"
+  ],
+  "unexpected_columns": [
+    "address_country",
+    "metrics_revenue",
+    "profile_email",
+    "profile_signup_date"
+  ],
+  "missing_values_by_column": {
+    "customer_id": 0,
+    "full_name": 0,
+    "profile_email": 0,
+    "profile_signup_date": 0,
+    "address_country": 0,
+    "metrics_revenue": 1
+  },
+  "missing_value_ratio_by_column": {
+    "customer_id": 0.0,
+    "full_name": 0.0,
+    "profile_email": 0.0,
+    "profile_signup_date": 0.0,
+    "address_country": 0.0,
+    "metrics_revenue": 0.5
+  },
+  "duplicate_row_count": 0,
+  "duplicate_row_ratio": 0.0,
+  "issues": [
+    {
+      "severity": "error",
+      "code": "MISSING_EXPECTED_COLUMN",
+      "message": "Expected column 'country' is missing from the input dataset.",
+      "column": "country",
+      "row_number": null,
+      "value": null
+    },
+    {
+      "severity": "error",
+      "code": "MISSING_EXPECTED_COLUMN",
+      "message": "Expected column 'email' is missing from the input dataset.",
+      "column": "email",
+      "row_number": null,
+      "value": null
+    },
+    {
+      "severity": "error",
+      "code": "MISSING_EXPECTED_COLUMN",
+      "message": "Expected column 'revenue' is missing from the input dataset.",
+      "column": "revenue",
+      "row_number": null,
+      "value": null
+    },
+    {
+      "severity": "error",
+      "code": "MISSING_EXPECTED_COLUMN",
+      "message": "Expected column 'signup_date' is missing from the input dataset.",
+      "column": "signup_date",
+      "row_number": null,
+      "value": null
+    },
+    {
+      "severity": "warning",
+      "code": "UNEXPECTED_COLUMN",
+      "message": "Column 'address_country' was found but is not listed in the expected schema.",
+      "column": "address_country",
+      "row_number": null,
+      "value": null
+    },
+    {
+      "severity": "warning",
+      "code": "UNEXPECTED_COLUMN",
+      "message": "Column 'metrics_revenue' was found but is not listed in the expected schema.",
+      "column": "metrics_revenue",
+      "row_number": null,
+      "value": null
+    },
+    {
+      "severity": "warning",
+      "code": "UNEXPECTED_COLUMN",
+      "message": "Column 'profile_email' was found but is not listed in the expected schema.",
+      "column": "profile_email",
+      "row_number": null,
+      "value": null
+    },
+    {
+      "severity": "warning",
+      "code": "UNEXPECTED_COLUMN",
+      "message": "Column 'profile_signup_date' was found but is not listed in the expected schema.",
+      "column": "profile_signup_date",
+      "row_number": null,
+      "value": null
+    },
+    {
+      "severity": "error",
+      "code": "REQUIRED_COLUMN_NOT_FOUND",
+      "message": "Required column 'email' is missing.",
+      "column": "email",
+      "row_number": null,
+      "value": null
+    }
+  ],
+  "output_files": {
+    "cleaned_csv": "data\\output\\json\\cleaned_customers_json.csv",
+    "sqlite": "data\\output\\json\\etl_output.sqlite"
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "dataset_name": "customers",
+  "expected_columns": [
+    "customer_id",
+    "full_name",
+    "email",
+    "signup_date",
+    "country",
+    "revenue"
+  ],
+  "column_rules": [
+    {
+      "name": "customer_id",
+      "dtype": "string",
+      "required": true,
+      "allow_missing": false
+    },
+    {
+      "name": "full_name",
+      "dtype": "string",
+      "required": true,
+      "allow_missing": false
+    },
+    {
+      "name": "email",
+      "dtype": "email",
+      "required": true,
+      "allow_missing": false
+    },
+    {
+      "name": "signup_date",
+      "dtype": "date",
+      "required": false,
+      "allow_missing": true
+    },
+    {
+      "name": "revenue",
+      "dtype": "number",
+      "required": false,
+      "allow_missing": true
+    }
+  ]
+}

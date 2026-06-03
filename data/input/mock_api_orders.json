@@ -1,0 +1,44 @@
+{
+  "status": "ok",
+  "page": 1,
+  "data": {
+    "orders": [
+      {
+        "order_id": "A100",
+        "customer": {
+          "id": "C001",
+          "email": "alice@example.com"
+        },
+        "order_date": "2024-06-01",
+        "amount": "180.00",
+        "shipping": {
+          "country": "USA"
+        }
+      },
+      {
+        "order_id": "A101",
+        "customer": {
+          "id": "C002",
+          "email": "bad-api-email"
+        },
+        "order_date": "06/02/2024",
+        "amount": null,
+        "shipping": {
+          "country": "UK"
+        }
+      },
+      {
+        "order_id": "A101",
+        "customer": {
+          "id": "C002",
+          "email": "bad-api-email"
+        },
+        "order_date": "06/02/2024",
+        "amount": null,
+        "shipping": {
+          "country": "UK"
+        }
+      }
+    ]
+  }
+}

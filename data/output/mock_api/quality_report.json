@@ -1,0 +1,95 @@
+{
+  "dataset_name": "orders",
+  "input_path": "data\\input\\mock_api_orders.json",
+  "input_type": "mock-api",
+  "table_name": "cleaned_api_orders",
+  "row_count_raw": 3,
+  "row_count_cleaned": 2,
+  "column_count": 6,
+  "column_names": [
+    "order_id",
+    "order_date",
+    "amount",
+    "customer_id",
+    "customer_email",
+    "shipping_country"
+  ],
+  "expected_columns": [
+    "order_id",
+    "customer_id",
+    "order_date",
+    "amount",
+    "status"
+  ],
+  "missing_expected_columns": [
+    "status"
+  ],
+  "unexpected_columns": [
+    "customer_email",
+    "shipping_country"
+  ],
+  "missing_values_by_column": {
+    "order_id": 0,
+    "order_date": 0,
+    "amount": 2,
+    "customer_id": 0,
+    "customer_email": 0,
+    "shipping_country": 0
+  },
+  "missing_value_ratio_by_column": {
+    "order_id": 0.0,
+    "order_date": 0.0,
+    "amount": 0.6667,
+    "customer_id": 0.0,
+    "customer_email": 0.0,
+    "shipping_country": 0.0
+  },
+  "duplicate_row_count": 1,
+  "duplicate_row_ratio": 0.3333,
+  "issues": [
+    {
+      "severity": "error",
+      "code": "MISSING_EXPECTED_COLUMN",
+      "message": "Expected column 'status' is missing from the input dataset.",
+      "column": "status",
+      "row_number": null,
+      "value": null
+    },
+    {
+      "severity": "warning",
+      "code": "UNEXPECTED_COLUMN",
+      "message": "Column 'customer_email' was found but is not listed in the expected schema.",
+      "column": "customer_email",
+      "row_number": null,
+      "value": null
+    },
+    {
+      "severity": "warning",
+      "code": "UNEXPECTED_COLUMN",
+      "message": "Column 'shipping_country' was found but is not listed in the expected schema.",
+      "column": "shipping_country",
+      "row_number": null,
+      "value": null
+    },
+    {
+      "severity": "warning",
+      "code": "INVALID_EMAIL",
+      "message": "Value 'bad-api-email' is not a valid email format.",
+      "column": "customer_email",
+      "row_number": 3,
+      "value": "bad-api-email"
+    },
+    {
+      "severity": "warning",
+      "code": "INVALID_EMAIL",
+      "message": "Value 'bad-api-email' is not a valid email format.",
+      "column": "customer_email",
+      "row_number": 4,
+      "value": "bad-api-email"
+    }
+  ],
+  "output_files": {
+    "cleaned_csv": "data\\output\\mock_api\\cleaned_api_orders.csv",
+    "sqlite": "data\\output\\mock_api\\etl_output.sqlite"
+  }
+}
