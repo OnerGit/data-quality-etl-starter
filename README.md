@@ -321,6 +321,10 @@ This project maps to common freelance tasks such as:
 - [Troubleshooting](docs/troubleshooting.md)
 - [Upwork portfolio note](docs/upwork-portfolio-note.md)
 
+## Related article
+
+[Build a Python Data Quality ETL Starter for Messy CSV, Excel, JSON, and API-Style Data](https://dev.to/bob_oner/build-a-python-data-quality-etl-starter-for-messy-csv-excel-json-and-api-style-data-46b)
+
 ## License
 
 MIT
