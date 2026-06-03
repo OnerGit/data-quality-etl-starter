@@ -62,16 +62,16 @@ This is intentional for handoff work because a client can open the original file
 
 For GitHub, Dev.to, and Upwork portfolio use, capture screenshots in this order:
 
-1. show the messy input file;
-2. show the CLI command running;
-3. show the generated quality report;
-4. show the cleaned CSV output;
-5. show passing pytest tests;
-6. show Docker running the workflow;
-7. show nested JSON flattened into a table.
+1. Show the messy input file.
+2. Show the CLI command running.
+3. Show the generated quality report.
+4. Show the cleaned CSV output.
+5. Show passing pytest tests.
+6. Show Docker running the workflow.
+7. Show nested JSON flattened into tabular output.
 
-Optional later screenshots:
+Future optional screenshots after later versions:
 
-- PostgreSQL export after v0.2;
-- FastAPI Swagger UI after v0.3;
-- `/validate` response after v0.3.
+8. Optional PostgreSQL export after v0.2.
+9. Optional FastAPI Swagger UI after v0.3.
+10. Optional `/validate` response after v0.3.
