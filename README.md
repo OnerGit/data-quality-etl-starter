@@ -213,18 +213,39 @@ SELECT * FROM cleaned_customers LIMIT 5;
 
 ## Optional PostgreSQL output
 
-PostgreSQL is an optional v0.2 target. It is useful when a client wants cleaned data loaded into a shared database instead of a local SQLite file.
+SQLite remains the default database target. v0.2.0 adds an optional PostgreSQL export path for users who want a more realistic client-style database loading workflow.
 
-Start PostgreSQL:
+This is useful for tasks such as:
+
+- CSV to PostgreSQL;
+- API-style JSON to PostgreSQL;
+- Excel cleanup before database import;
+- validation before loading data into a reporting database;
+- lightweight ETL automation for small teams.
+
+Start local PostgreSQL:
 
 ```bash
 docker compose up -d postgres
 ```
 
+Set `DATABASE_URL`.
+
+Windows PowerShell:
+
+```powershell
+$env:DATABASE_URL="postgresql+psycopg://dq_user:dq_password@localhost:5432/dq_demo"
+```
+
+macOS / Linux:
+
+```bash
+export DATABASE_URL="postgresql+psycopg://dq_user:dq_password@localhost:5432/dq_demo"
+```
+
 Run export:
 
 ```bash
-DATABASE_URL=postgresql+psycopg://dq_user:dq_password@localhost:5432/dq_demo \
 python -m dq_etl_starter.cli run \
   --input data/input/messy_customers.csv \
   --input-type csv \
@@ -233,6 +254,14 @@ python -m dq_etl_starter.cli run \
   --db-target postgres \
   --table-name cleaned_customers
 ```
+
+Verify the table without installing PostgreSQL locally:
+
+```bash
+docker exec -it dq_etl_postgres psql -U dq_user -d dq_demo -c "SELECT * FROM cleaned_customers LIMIT 5;"
+```
+
+See [Optional PostgreSQL export](docs/postgres.md) for the full workflow.
 
 ## Run tests
 
