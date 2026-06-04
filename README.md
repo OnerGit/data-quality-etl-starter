@@ -312,6 +312,10 @@ docker run --rm -v "${PWD}/data/output:/app/data/output" data-quality-etl-starte
 
 ![JSON flatten output](screenshots/07_json_flatten_output.png)
 
+### Optional PostgreSQL export
+
+![PostgreSQL export](screenshots/08_postgres_export.png)
+
 ## Optional FastAPI layer
 
 FastAPI is intentionally not part of the v0.1 core. A later v0.3 layer can add endpoints such as:
