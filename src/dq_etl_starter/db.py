@@ -1,35 +1,62 @@
 from __future__ import annotations
 
 import os
-import sqlite3
 from pathlib import Path
-from typing import Any
+
+from sqlalchemy import create_engine
+from sqlalchemy.engine import Engine
 
 
 def get_database_url(database_url: str | None = None) -> str | None:
+    """Return an explicit database URL or fall back to the DATABASE_URL env var."""
     return database_url or os.getenv("DATABASE_URL")
 
 
-def create_db_connection(db_target: str, sqlite_path: str | Path | None = None, database_url: str | None = None) -> Any:
-    """Create a DB connection/engine for pandas DataFrame.to_sql.
+def create_db_engine(
+    db_target: str,
+    sqlite_path: str | Path | None = None,
+    database_url: str | None = None,
+) -> Engine:
+    """Create a SQLAlchemy engine for SQLite or PostgreSQL.
 
-    SQLite uses the Python standard library so v0.1 can run without a server.
-    PostgreSQL uses SQLAlchemy and an external DATABASE_URL as an optional v0.2 path.
+    SQLite remains the default local database target.
+    PostgreSQL is an optional v0.2 export target controlled by DATABASE_URL.
     """
+
     if db_target == "sqlite":
         if sqlite_path is None:
-            raise ValueError("sqlite_path is required for sqlite export")
-        Path(sqlite_path).parent.mkdir(parents=True, exist_ok=True)
-        return sqlite3.connect(sqlite_path)
+            raise ValueError("sqlite_path is required when db_target='sqlite'.")
+
+        sqlite_path = Path(sqlite_path)
+        sqlite_path.parent.mkdir(parents=True, exist_ok=True)
+
+        return create_engine(f"sqlite:///{sqlite_path}")
 
     if db_target == "postgres":
         url = get_database_url(database_url)
-        if not url:
-            raise ValueError("DATABASE_URL is required for PostgreSQL export")
-        try:
-            from sqlalchemy import create_engine
-        except ImportError as exc:
-            raise RuntimeError("SQLAlchemy is required for PostgreSQL export. Install project dependencies first.") from exc
-        return create_engine(url)
 
-    raise ValueError(f"Unsupported db_target: {db_target}")
+        if not url:
+            raise ValueError(
+                "DATABASE_URL is required when db_target='postgres'. "
+                "Example: postgresql+psycopg://dq_user:dq_password@localhost:5432/dq_demo"
+            )
+
+        return create_engine(url, pool_pre_ping=True)
+
+    raise ValueError(
+        f"Unsupported db_target: {db_target}. "
+        "Supported values are: sqlite, postgres."
+    )
+
+
+def create_db_connection(
+    db_target: str,
+    sqlite_path: str | Path | None = None,
+    database_url: str | None = None,
+) -> Engine:
+    """Backward-compatible wrapper for older code that imported create_db_connection."""
+    return create_db_engine(
+        db_target=db_target,
+        sqlite_path=sqlite_path,
+        database_url=database_url,
+    )
