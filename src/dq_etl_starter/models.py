@@ -47,7 +47,7 @@ class DatasetSchema(BaseModel):
 
 
 class WorkflowConfig(BaseModel):
-    """Runtime contract for one CLI workflow run."""
+    """Runtime contract for one CLI or API workflow run."""
 
     input_path: Path
     input_type: InputType
@@ -100,3 +100,17 @@ class QualityReport(BaseModel):
     duplicate_row_ratio: float
     issues: list[ValidationIssue] = Field(default_factory=list)
     output_files: dict[str, str] = Field(default_factory=dict)
+
+
+class HealthResponse(BaseModel):
+    """Small response contract for the FastAPI health endpoint."""
+
+    status: str
+    service: str
+    version: str
+
+
+class ApiErrorResponse(BaseModel):
+    """Optional documented error response shape for the FastAPI service."""
+
+    detail: str
