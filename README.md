@@ -33,6 +33,7 @@ This starter workflow can:
 - export cleaned data to SQLite by default;
 - optionally export to PostgreSQL;
 - generate Markdown and JSON data quality reports;
+- optionally expose the validation workflow through a FastAPI service layer;
 - run through a CLI, pytest tests, and Docker.
 
 ## Example workflow
@@ -48,9 +49,23 @@ validate expected schema rules
         ↓
 clean duplicate rows and text values
         ↓
-export cleaned CSV + SQLite
+export cleaned CSV + SQLite / optional PostgreSQL
         ↓
 generate data quality report
+```
+
+v0.3.0 also adds an optional API validation path:
+
+```text
+CSV / Excel / JSON file upload
+        ↓
+FastAPI /validate endpoint
+        ↓
+reuse the shared workflow service
+        ↓
+return quality report JSON
+        ↓
+optional local report file output
 ```
 
 ## Tech stack
@@ -60,6 +75,7 @@ generate data quality report
 - Pydantic
 - SQLite
 - SQLAlchemy-ready optional PostgreSQL export
+- FastAPI optional validation service
 - pytest
 - Docker
 
@@ -74,6 +90,10 @@ data-quality-etl-starter/
 ├── docs/
 ├── screenshots/
 ├── src/dq_etl_starter/
+│   ├── api.py
+│   ├── cli.py
+│   ├── services.py
+│   └── ...
 ├── tests/
 ├── Dockerfile
 ├── docker-compose.yml
@@ -158,7 +178,7 @@ python -m dq_etl_starter.cli run \
 
 ## Run with mock API data
 
-This project does not call a real external API in v0.1. The mock API file simulates a JSON response so the workflow stays reproducible and does not require API keys.
+This project does not call a real external API. The mock API file simulates a JSON response so the workflow stays reproducible and does not require API keys.
 
 ```bash
 python -m dq_etl_starter.cli run \
@@ -198,6 +218,7 @@ Core models include:
 - `ColumnRule`
 - `ValidationIssue`
 - `QualityReport`
+- `HealthResponse`
 
 The cleaning itself remains DataFrame-based because freelance CSV, Excel, JSON, and API data often has changing columns.
 
@@ -213,7 +234,7 @@ SELECT * FROM cleaned_customers LIMIT 5;
 
 ## Optional PostgreSQL output
 
-SQLite remains the default database target. v0.2.0 adds an optional PostgreSQL export path for users who want a more realistic client-style database loading workflow.
+SQLite remains the default database target. v0.2.0 added an optional PostgreSQL export path for users who want a more realistic client-style database loading workflow.
 
 This is useful for tasks such as:
 
@@ -263,16 +284,75 @@ docker exec -it dq_etl_postgres psql -U dq_user -d dq_demo -c "SELECT * FROM cle
 
 See [Optional PostgreSQL export](docs/postgres.md) for the full workflow.
 
+## Optional FastAPI validation service
+
+v0.3.0 adds an optional FastAPI service layer around the same workflow. The CLI remains the source of truth. The API is a lightweight wrapper for HTTP file upload validation and Swagger UI demonstration.
+
+Start the API locally:
+
+```bash
+uvicorn dq_etl_starter.api:app --reload --host 127.0.0.1 --port 8000
+```
+
+Open Swagger UI:
+
+```text
+http://127.0.0.1:8000/docs
+```
+
+Health check:
+
+```bash
+curl http://127.0.0.1:8000/health
+```
+
+PowerShell:
+
+```powershell
+Invoke-RestMethod http://127.0.0.1:8000/health
+```
+
+The core API endpoint is:
+
+```text
+POST /validate
+```
+
+It accepts `multipart/form-data` fields:
+
+- `file`: uploaded CSV, Excel, or JSON file;
+- `input_type`: `csv`, `excel`, or `json`;
+- `schema_file`: uploaded JSON schema file;
+- `records_path`: optional dot path for nested JSON;
+- `save_report`: optional boolean, default `false`.
+
+The endpoint returns a Pydantic-based `QualityReport` JSON response.
+
+See [Optional FastAPI Validation Service](docs/api.md) for the full workflow.
+
 ## Run tests
 
 ```bash
 pytest
 ```
 
+Run only API tests:
+
+```bash
+pytest tests/test_api.py
+```
+
 ## Run with Docker
+
+Build the image:
 
 ```bash
 docker build -t data-quality-etl-starter .
+```
+
+Run the default CLI workflow:
+
+```bash
 docker run --rm -v "${PWD}/data/output:/app/data/output" data-quality-etl-starter
 ```
 
@@ -280,6 +360,20 @@ On Windows PowerShell, use the same command:
 
 ```powershell
 docker run --rm -v "${PWD}/data/output:/app/data/output" data-quality-etl-starter
+```
+
+Run the optional FastAPI service by overriding the default command:
+
+```bash
+docker run --rm -p 8000:8000 data-quality-etl-starter \
+  uvicorn dq_etl_starter.api:app --host 0.0.0.0 --port 8000
+```
+
+Windows PowerShell:
+
+```powershell
+docker run --rm -p 8000:8000 data-quality-etl-starter `
+  uvicorn dq_etl_starter.api:app --host 0.0.0.0 --port 8000
 ```
 
 ## Screenshots
@@ -316,20 +410,17 @@ docker run --rm -v "${PWD}/data/output:/app/data/output" data-quality-etl-starte
 
 ![PostgreSQL export](screenshots/08_postgres_export.png)
 
-## Optional FastAPI layer
+### FastAPI Swagger UI
 
-FastAPI is intentionally not part of the v0.1 core. A later v0.3 layer can add endpoints such as:
+![FastAPI Swagger UI](screenshots/09_fastapi_swagger.png)
 
-- `GET /health`
-- `POST /upload`
-- `POST /validate`
-- `GET /report/{run_id}`
+### `/validate` response JSON
 
-The CLI workflow remains the source of truth.
+![Validate response](screenshots/10_validate_response.png)
 
 ## What this project is not
 
-This is not a big data platform, an Airflow/dbt project, or a production data warehouse. It is a small, practical starter for repeatable data cleaning, validation, export, and reporting workflows.
+This is not a big data platform, an Airflow/dbt project, a production data warehouse, a BI dashboard, a frontend application, or an AI/LLM workflow. It is a small, practical starter for repeatable data cleaning, validation, export, and reporting workflows.
 
 The goal is to demonstrate the kind of lightweight data workflow that many small teams need before they invest in heavier data infrastructure.
 
@@ -344,19 +435,21 @@ This project maps to common freelance tasks such as:
 - reporting automation;
 - lightweight ETL;
 - export to SQLite or PostgreSQL;
+- FastAPI validation service around an existing workflow;
 - preparing cleaner data for dashboards, analytics, or APIs.
 
 ## Documentation
 
 - [Workflow notes](docs/workflow.md)
-- [Pydantic schema design](docs/pydantic-schema.md)
+- [Pydantic schema design](docs/schema.md)
 - [Optional PostgreSQL export](docs/postgres.md)
+- [Optional FastAPI Validation Service](docs/api.md)
 - [Troubleshooting](docs/troubleshooting.md)
-- [Upwork portfolio note](docs/upwork-portfolio-note.md)
+- [Upwork portfolio note](docs/upwork_portfolio_note.md)
 
 ## Related article
 
-[Build a Python Data Quality ETL Starter for Messy CSV, Excel, JSON, and API-Style Data](https://dev.to/bob_oner/build-a-python-data-quality-etl-starter-for-messy-csv-excel-json-and-api-style-data-46b)
+[Build a Python Data Quality ETL Starter for Messy CSV, Excel, JSON, and API-Style Data](https://dev.to/bob_oner/build-a-python-data-quality-etl-starter-for-messy-csv-excel-json-and-api-style-data-3j0m)
 
 ## License
 
