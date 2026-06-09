@@ -1,0 +1,95 @@
+{
+  "dataset_name": "generated_orders",
+  "expected_columns": [
+    "order_id",
+    "customer_id",
+    "order_date",
+    "country",
+    "product_category",
+    "quantity",
+    "unit_price",
+    "discount_rate",
+    "revenue",
+    "email",
+    "source_system"
+  ],
+  "column_rules": [
+    {
+      "name": "order_id",
+      "dtype": "string",
+      "required": true,
+      "allow_missing": false,
+      "description": "Synthetic order identifier."
+    },
+    {
+      "name": "customer_id",
+      "dtype": "string",
+      "required": true,
+      "allow_missing": false,
+      "description": "Synthetic customer identifier."
+    },
+    {
+      "name": "order_date",
+      "dtype": "date",
+      "required": true,
+      "allow_missing": false,
+      "description": "Order date in ISO format when valid."
+    },
+    {
+      "name": "country",
+      "dtype": "string",
+      "required": true,
+      "allow_missing": false,
+      "description": "Customer/order country."
+    },
+    {
+      "name": "product_category",
+      "dtype": "string",
+      "required": true,
+      "allow_missing": false,
+      "description": "Synthetic product category."
+    },
+    {
+      "name": "quantity",
+      "dtype": "number",
+      "required": true,
+      "allow_missing": false,
+      "description": "Ordered quantity."
+    },
+    {
+      "name": "unit_price",
+      "dtype": "number",
+      "required": true,
+      "allow_missing": false,
+      "description": "Unit price."
+    },
+    {
+      "name": "discount_rate",
+      "dtype": "number",
+      "required": true,
+      "allow_missing": false,
+      "description": "Discount rate as a decimal fraction."
+    },
+    {
+      "name": "revenue",
+      "dtype": "number",
+      "required": true,
+      "allow_missing": false,
+      "description": "Revenue value used by analytics summaries."
+    },
+    {
+      "name": "email",
+      "dtype": "email",
+      "required": true,
+      "allow_missing": false,
+      "description": "Synthetic email address using example.com."
+    },
+    {
+      "name": "source_system",
+      "dtype": "string",
+      "required": true,
+      "allow_missing": false,
+      "description": "Synthetic source system label."
+    }
+  ]
+}

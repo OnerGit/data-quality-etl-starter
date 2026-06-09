@@ -9,21 +9,33 @@ from dq_etl_starter.db import create_db_engine
 
 def export_cleaned_csv(df: pd.DataFrame, output_path: str | Path) -> Path:
     """Export the cleaned DataFrame to CSV."""
+
     output_path = Path(output_path)
     output_path.parent.mkdir(parents=True, exist_ok=True)
-
     df.to_csv(output_path, index=False)
-
     return output_path
 
 
 def export_cleaned_excel(df: pd.DataFrame, output_path: str | Path) -> Path:
     """Export the cleaned DataFrame to Excel."""
+
     output_path = Path(output_path)
     output_path.parent.mkdir(parents=True, exist_ok=True)
-
     df.to_excel(output_path, index=False)
+    return output_path
 
+
+def export_to_parquet(df: pd.DataFrame, output_path: str | Path) -> Path:
+    """Export a DataFrame to a local Parquet file.
+
+    Parquet is used only by the optional v0.4 analytics-ready demo. It is not
+    part of the default CLI workflow, so existing CSV / SQLite / PostgreSQL
+    paths remain unchanged.
+    """
+
+    output_path = Path(output_path)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    df.to_parquet(output_path, index=False)
     return output_path
 
 
@@ -34,13 +46,12 @@ def export_to_sqlite(
     if_exists: str = "replace",
 ) -> Path:
     """Export the cleaned DataFrame to a local SQLite database."""
-    sqlite_path = Path(sqlite_path)
 
+    sqlite_path = Path(sqlite_path)
     engine = create_db_engine(
         db_target="sqlite",
         sqlite_path=sqlite_path,
     )
-
     try:
         df.to_sql(
             table_name,
@@ -50,7 +61,6 @@ def export_to_sqlite(
         )
     finally:
         engine.dispose()
-
     return sqlite_path
 
 
@@ -66,32 +76,27 @@ def export_to_postgres(
     """
 
     engine = None
-
     try:
         engine = create_db_engine(
             db_target="postgres",
             database_url=database_url,
         )
-
         df.to_sql(
             table_name,
             con=engine,
             if_exists=if_exists,
             index=False,
         )
-
     except ValueError:
         raise
-
     except Exception as exc:
         raise RuntimeError(
-            "PostgreSQL export failed. Please check that DATABASE_URL is set, "
+            "PostgreSQL export failed. "
+            "Please check that DATABASE_URL is set, "
             "the PostgreSQL container is running, the credentials are correct, "
             "and psycopg is installed."
         ) from exc
-
     finally:
         if engine is not None:
             engine.dispose()
-
     return table_name
