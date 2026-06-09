@@ -1,6 +1,6 @@
 # Screenshots
 
-These screenshots support the project README, technical documentation, tutorials, and portfolio references.
+These screenshots support the project README, technical documentation, tutorials.
 
 The recommended story is:
 
@@ -124,13 +124,13 @@ Run the nested JSON workflow:
 
 ```bash
 python -m dq_etl_starter.cli run \
-  --input data/input/nested_orders.json \
+  --input data/input/nested_customers.json \
   --input-type json \
-  --records-path data.orders \
-  --schema data/expected/order_schema.json \
+  --records-path data.customers \
+  --schema data/expected/customer_schema.json \
   --output-dir data/output/json \
   --db-target sqlite \
-  --table-name cleaned_orders
+  --table-name cleaned_customers_json
 ```
 
 Capture the cleaned output or terminal result showing nested JSON flattened into a table.
