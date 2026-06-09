@@ -529,6 +529,12 @@ data/output/analytics/
 
 The repository should keep source code, tests, documentation, lightweight sample files, and screenshots.
 
+## Related articles
+
+- [Build a Python Data Quality ETL Starter for Messy CSV, Excel, JSON, and API-Style Data](https://dev.to/bob_oner/build-a-python-data-quality-etl-starter-for-messy-csv-excel-json-and-api-style-data-46b)
+- [From Data Quality Checks to Analytics-Ready Parquet with Python](https://dev.to/bob_oner/from-data-quality-checks-to-analytics-ready-parquet-with-python-39bd)
+
+
 ## License
 
 MIT
