@@ -14,3 +14,10 @@ __pycache__/
 build/
 dist/
 *.egg-info/
+
+# v0.4 generated analytics demo artifacts.
+# Keep scripts, docs, schemas, tests, and screenshots in Git;
+# do not commit large generated raw data or local analytics outputs.
+data/generated/
+data/output/analytics/
+*.parquet
