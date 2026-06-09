@@ -1,8 +1,10 @@
 # Data Quality ETL Starter
 
-Small teams often receive messy CSV, Excel, JSON, or API data before reporting. This project shows how to turn those inputs into a repeatable Python workflow that validates, cleans, exports, and documents the data quality of each run.
+Small teams often receive messy CSV, Excel, JSON, or API-style data before reporting.
 
-It is designed as a practical GitHub portfolio project for lightweight data cleaning, validation, reporting automation, and ETL work. The goal is not to build an enterprise data platform, but to demonstrate a small workflow that can be understood, run, tested, and adapted.
+This project shows how to turn those inputs into a repeatable Python workflow that validates, cleans, exports, and documents the data quality of each run.
+
+The goal is not to build an enterprise data platform. The goal is to demonstrate a small, practical, testable, and reproducible data workflow that can be understood, run, extended, and adapted.
 
 ## What problem this solves
 
@@ -10,97 +12,100 @@ Many small-team data problems are not big data problems. They are repeatability,
 
 Typical issues include:
 
-- messy CSV or Excel exports from different tools;
-- inconsistent column names;
-- missing values and duplicate rows;
-- invalid email, date, or number formats;
-- nested JSON that must become reporting-ready tables;
-- API-style JSON responses that need to be flattened and exported;
-- manual Excel cleanup repeated every week;
-- no data quality report for handoff;
-- larger generated test data needed before a workflow can be trusted;
-- cleaned files that need to become analytics-ready CSV / Parquet outputs.
+* messy CSV or Excel exports from different tools;
+* inconsistent column names;
+* missing values and duplicate rows;
+* invalid email, date, or number formats;
+* nested JSON that must become reporting-ready tables;
+* API-style JSON responses that need to be flattened and exported;
+* manual Excel cleanup repeated every week;
+* no data quality report for handoff;
+* larger generated test data needed before a workflow can be trusted;
+* cleaned files that need to become analytics-ready CSV or Parquet outputs.
 
 ## What this project does
 
 This starter workflow can:
 
-- read CSV, Excel, JSON, and mock API data;
-- flatten nested JSON into a table;
-- normalize column names into stable `snake_case` names;
-- validate expected columns and schema rules with Pydantic models;
-- detect missing values, duplicate rows, bad email formats, bad dates, and bad numbers;
-- clean text values and drop duplicate rows;
-- export cleaned CSV output;
-- export cleaned data to SQLite by default;
-- optionally export to PostgreSQL;
-- generate Markdown and JSON data quality reports;
-- optionally expose the validation workflow through a FastAPI service layer;
-- optionally generate larger synthetic order data for validation demos;
-- optionally export analytics-ready CSV and Parquet files;
-- optionally query Parquet output locally with DuckDB;
-- run through a CLI, pytest tests, and Docker.
+* read CSV, Excel, JSON, and mock API data;
+* flatten nested JSON into a table;
+* normalize column names into stable `snake_case` names;
+* validate expected columns and schema rules with Pydantic models;
+* detect missing values, duplicate rows, bad email formats, bad dates, and bad numbers;
+* clean text values and drop duplicate rows;
+* export cleaned CSV output;
+* export cleaned data to SQLite by default;
+* optionally export cleaned data to PostgreSQL;
+* generate Markdown and JSON data quality reports;
+* optionally expose the validation workflow through a FastAPI service layer;
+* optionally generate larger synthetic order data for validation demos;
+* optionally export analytics-ready CSV and Parquet files;
+* optionally query Parquet output locally with DuckDB;
+* run through a CLI, pytest tests, and Docker.
 
 ## Example workflow
 
+Default local workflow:
+
 ```text
 messy CSV / Excel / JSON / mock API
-        ↓
+↓
 read and flatten
-        ↓
+↓
 normalize columns
-        ↓
+↓
 validate expected schema rules
-        ↓
+↓
 clean duplicate rows and text values
-        ↓
+↓
 export cleaned CSV + SQLite / optional PostgreSQL
-        ↓
+↓
 generate data quality report
 ```
 
-v0.3.0 adds an optional API validation path:
+Optional FastAPI validation path:
 
 ```text
 CSV / Excel / JSON file upload
-        ↓
+↓
 FastAPI /validate endpoint
-        ↓
+↓
 reuse the shared workflow service
-        ↓
+↓
 return quality report JSON
-        ↓
+↓
 optional local report file output
 ```
 
-v0.4.0 adds an optional analytics-ready path:
+Optional analytics-ready path:
 
 ```text
 generated messy order data
-        ↓
+↓
 existing validation and cleaning logic
-        ↓
+↓
 cleaned CSV
-        ↓
+↓
 cleaned Parquet
-        ↓
+↓
 DuckDB query demo
-        ↓
+↓
 summary CSV tables + benchmark report
 ```
 
 ## Tech stack
 
-- Python
-- pandas
-- Pydantic
-- SQLite
-- SQLAlchemy-ready optional PostgreSQL export
-- FastAPI optional validation service
-- Parquet optional analytics-ready export
-- DuckDB optional local analytics query demo
-- pytest
-- Docker
+* Python
+* pandas
+* Pydantic
+* SQLite
+* SQLAlchemy
+* optional PostgreSQL export
+* optional FastAPI validation service
+* optional Parquet export
+* optional DuckDB local analytics query demo
+* pytest
+* Docker
 
 ## Project structure
 
@@ -117,22 +122,35 @@ data-quality-etl-starter/
 │   └── run_analytics_demo.py
 ├── src/dq_etl_starter/
 │   ├── api.py
-│   ├── cli.py
-│   ├── services.py
 │   ├── analytics.py
-│   └── ...
+│   ├── cli.py
+│   ├── clean.py
+│   ├── db.py
+│   ├── exporters.py
+│   ├── readers.py
+│   ├── reports.py
+│   ├── services.py
+│   └── validate.py
 ├── tests/
 ├── Dockerfile
 ├── docker-compose.yml
 ├── pyproject.toml
+├── requirements.txt
 └── README.md
 ```
 
 ## Quick start
 
+Clone the repository:
+
 ```bash
 git clone https://github.com/OnerGit/data-quality-etl-starter.git
 cd data-quality-etl-starter
+```
+
+Create a virtual environment:
+
+```bash
 python -m venv .venv
 ```
 
@@ -169,6 +187,18 @@ python -m dq_etl_starter.cli run \
   --table-name cleaned_customers
 ```
 
+Windows PowerShell:
+
+```powershell
+python -m dq_etl_starter.cli run `
+  --input data/input/messy_customers.csv `
+  --input-type csv `
+  --schema data/expected/customer_schema.json `
+  --output-dir data/output/csv `
+  --db-target sqlite `
+  --table-name cleaned_customers
+```
+
 Expected outputs:
 
 ```text
@@ -190,17 +220,42 @@ python -m dq_etl_starter.cli run \
   --table-name cleaned_orders
 ```
 
+Windows PowerShell:
+
+```powershell
+python -m dq_etl_starter.cli run `
+  --input data/input/messy_orders.xlsx `
+  --input-type excel `
+  --schema data/expected/order_schema.json `
+  --output-dir data/output/excel `
+  --db-target sqlite `
+  --table-name cleaned_orders
+```
+
 ## Run with nested JSON
 
 ```bash
 python -m dq_etl_starter.cli run \
-  --input data/input/nested_orders.json \
+  --input data/input/nested_customers.json \
   --input-type json \
-  --records-path data.orders \
-  --schema data/expected/order_schema.json \
+  --records-path data.customers \
+  --schema data/expected/customer_schema.json \
   --output-dir data/output/json \
   --db-target sqlite \
-  --table-name cleaned_orders
+  --table-name cleaned_customers_json
+```
+
+Windows PowerShell:
+
+```powershell
+python -m dq_etl_starter.cli run `
+  --input data/input/nested_customers.json `
+  --input-type json `
+  --records-path data.customers `
+  --schema data/expected/customer_schema.json `
+  --output-dir data/output/json `
+  --db-target sqlite `
+  --table-name cleaned_customers_json
 ```
 
 ## Run with mock API JSON
@@ -212,12 +267,26 @@ python -m dq_etl_starter.cli run \
   --schema data/expected/order_schema.json \
   --output-dir data/output/mock_api \
   --db-target sqlite \
-  --table-name cleaned_orders
+  --table-name cleaned_api_orders
+```
+
+Windows PowerShell:
+
+```powershell
+python -m dq_etl_starter.cli run `
+  --input data/input/mock_api_orders.json `
+  --input-type mock-api `
+  --schema data/expected/order_schema.json `
+  --output-dir data/output/mock_api `
+  --db-target sqlite `
+  --table-name cleaned_api_orders
 ```
 
 ## Optional PostgreSQL export
 
-SQLite remains the default local workflow. PostgreSQL is optional and is useful when the delivery target is a real database table.
+SQLite remains the default local workflow.
+
+PostgreSQL is optional and is useful when the cleaned output should also be delivered as a database table.
 
 Start local PostgreSQL:
 
@@ -270,18 +339,29 @@ http://127.0.0.1:8000/docs
 
 Useful endpoints:
 
-- `GET /health`
-- `POST /validate`
+* `GET /health`
+* `POST /validate`
 
 The API is a thin wrapper around the shared workflow service. The CLI workflow remains the source of truth.
+
+Docker API run:
+
+```bash
+docker run --rm -p 8000:8000 data-quality-etl-starter:0.4.0 \
+  uvicorn dq_etl_starter.api:app --host 0.0.0.0 --port 8000
+```
 
 See [`docs/api.md`](docs/api.md) for full API instructions.
 
 ## Optional analytics-ready export
 
-v0.4.0 adds a larger generated data and analytics-ready export demo. It can generate synthetic customer/order-style data, run the existing validation and cleaning logic, export cleaned CSV and Parquet files, query the Parquet output with DuckDB, and produce lightweight summary tables and a benchmark report.
+v0.4.0 adds a larger generated data and analytics-ready export demo.
+
+It can generate synthetic customer/order-style data, run the existing validation and cleaning logic, export cleaned CSV and Parquet files, query the Parquet output with DuckDB, and produce lightweight summary tables and a benchmark report.
 
 This path is useful for showing that the workflow is not limited to tiny demo files. It is still intentionally local, small, and reproducible.
+
+Generated data is synthetic and should not be treated as real customer data.
 
 Generate 1,000 rows:
 
@@ -301,12 +381,30 @@ python scripts/generate_sample_data.py \
   --seed 42
 ```
 
+Windows PowerShell example:
+
+```powershell
+python scripts/generate_sample_data.py `
+  --rows 100000 `
+  --output data/generated/orders_100k.csv `
+  --seed 42
+```
+
 Run the analytics demo:
 
 ```bash
 python scripts/run_analytics_demo.py \
   --input data/generated/orders_100k.csv \
   --schema data/expected/generated_order_schema.json \
+  --output-dir data/output/analytics
+```
+
+Windows PowerShell:
+
+```powershell
+python scripts/run_analytics_demo.py `
+  --input data/generated/orders_100k.csv `
+  --schema data/expected/generated_order_schema.json `
   --output-dir data/output/analytics
 ```
 
@@ -326,7 +424,10 @@ data/output/analytics/benchmark_report.md
 Example DuckDB query:
 
 ```sql
-SELECT country, ROUND(SUM(revenue), 2) AS total_revenue, COUNT(*) AS order_count
+SELECT
+    country,
+    ROUND(SUM(revenue), 2) AS total_revenue,
+    COUNT(*) AS order_count
 FROM read_parquet('data/output/analytics/cleaned_orders.parquet')
 GROUP BY country
 ORDER BY total_revenue DESC
@@ -337,14 +438,13 @@ See [`docs/analytics.md`](docs/analytics.md) for full analytics-ready export ins
 
 ## Screenshots
 
-The screenshots are designed to support GitHub README, Dev.to articles, Upwork portfolio entries, and proposal references.
+The screenshots support the README and documentation.
 
 Recommended v0.4 screenshots:
 
-- `screenshots/11_generated_data_100k.png`
-- `screenshots/12_analytics_outputs.png`
-- `screenshots/13_duckdb_query.png`
-- `screenshots/14_benchmark_report.png`
+* `screenshots/11_generated_data_100k.png`
+* `screenshots/12_analytics_outputs_and_duckdb_query.png`
+* `screenshots/13_benchmark_report.png`
 
 See [`screenshots/README.md`](screenshots/README.md) for capture notes.
 
@@ -354,6 +454,7 @@ Run all tests:
 
 ```bash
 python -m compileall -q src/dq_etl_starter
+python -m compileall -q scripts
 pytest
 ```
 
@@ -376,56 +477,57 @@ docker build -t data-quality-etl-starter:0.4.0 -t data-quality-etl-starter:lates
 docker run --rm data-quality-etl-starter:0.4.0
 ```
 
-Docker should not change the default project identity. The default run remains a simple reproducible CLI workflow.
+The default Docker run remains a simple reproducible CLI workflow.
+
+If your local network is unstable during dependency installation, you can pass a custom pip index URL at build time if the Dockerfile supports `PIP_INDEX_URL`:
+
+```bash
+docker build \
+  --build-arg PIP_INDEX_URL=https://pypi.org/simple \
+  -t data-quality-etl-starter:0.4.0 \
+  -t data-quality-etl-starter:latest \
+  .
+```
 
 ## Version roadmap
 
-| Version | Main goal | Business value | Technical scope |
-|---|---|---|---|
-| v0.1.0 | Local CLI workflow baseline | Proves repeatable data cleaning and validation workflow | pandas, Pydantic, SQLite, Markdown report, pytest, Docker |
-| v0.2.0 | PostgreSQL optional export | Adds database delivery capability for client projects | SQLAlchemy engine, PostgreSQL export, Docker Compose, integration docs |
-| v0.3.0 | FastAPI validation service | Turns CLI workflow into an API demo with Swagger UI | FastAPI, Pydantic request/response models, upload/validate endpoint |
-| v0.4.0 | Larger generated data + analytics-ready export | Proves workflow can handle more realistic data volume | generated data, benchmark report, Parquet, DuckDB |
-| v0.5.0 | BI-ready optional demo | Shows cleaned data can support dashboards/reporting | PostgreSQL + optional Metabase demo, summary tables |
-| v0.6.0 | AI-ready data preparation | Prepares clean, documented, machine-readable data for later ML/AI workflows | data dictionary, schema profile, feature-ready output |
+| Version | Main goal                                      | Technical scope                                                           |
+| ------- | ---------------------------------------------- | ------------------------------------------------------------------------- |
+| v0.1.0  | Local CLI workflow baseline                    | pandas, Pydantic, SQLite, Markdown report, pytest, Docker                 |
+| v0.2.0  | Optional PostgreSQL export                     | SQLAlchemy engine, PostgreSQL export, Docker Compose, integration docs    |
+| v0.3.0  | FastAPI validation service                     | FastAPI, Pydantic request/response models, upload/validate endpoint       |
+| v0.4.0  | Larger generated data + analytics-ready export | generated data, benchmark report, Parquet, DuckDB                         |
+| v0.5.0  | BI-ready optional demo                         | PostgreSQL + optional reporting demo, summary tables                      |
+| v0.6.0  | AI-ready data preparation                      | data dictionary, schema profile, validation summary, feature-ready output |
 
 ## What this project is not
 
 This project is intentionally not:
 
-- a production data warehouse;
-- an Airflow/dbt/Snowflake/Databricks/PySpark project;
-- a full backend application;
-- a complex BI platform;
-- a user management system;
-- an LLM data cleaning tool;
-- a RAG chatbot;
-- an AI agent.
+* a production data warehouse;
+* an Airflow, dbt, Snowflake, Databricks, or PySpark project;
+* a full backend application;
+* a complex BI platform;
+* a user management system;
+* an LLM data cleaning tool;
+* a RAG chatbot;
+* an AI agent.
 
-The design goal is small, runnable, testable, screenshot-ready, and directly useful as Upwork proposal evidence.
+The design goal is small, runnable, testable, screenshot-ready, and easy to inspect.
 
-## Upwork proposal mapping
+## Generated data policy
 
-This repository can support proposals for:
+Generated data and analytics outputs are intentionally local artifacts.
 
-- CSV cleanup;
-- Excel cleanup;
-- JSON to CSV;
-- API to CSV;
-- data validation;
-- data quality reporting;
-- reporting automation;
-- lightweight ETL;
-- SQLite export;
-- PostgreSQL export;
-- FastAPI data validation service;
-- analytics-ready CSV / Parquet preparation;
-- DuckDB local analytics demo;
-- summary table generation.
+Do not commit:
 
-Reusable proposal sentence:
+```text
+data/generated/
+data/output/analytics/
+*.parquet
+```
 
-> I have a small reference project that demonstrates a similar workflow: ingest messy CSV/API/Excel/JSON data, validate it with explicit schema rules, clean it, export a reporting-ready dataset to CSV, SQLite, PostgreSQL, or optional Parquet, and generate a clear data quality report.
+The repository should keep source code, tests, documentation, lightweight sample files, and screenshots.
 
 ## License
 
