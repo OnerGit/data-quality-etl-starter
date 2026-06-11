@@ -1,6 +1,6 @@
 # Screenshots
 
-These screenshots support the project README, technical documentation, tutorials.
+These screenshots support the project README, technical documentation, and tutorials.
 
 The recommended story is:
 
@@ -16,25 +16,33 @@ The recommended story is:
 10. `/validate` API response JSON;
 11. generated 100k synthetic data;
 12. analytics-ready output files and DuckDB query preview;
-13. benchmark report.
+13. benchmark report;
+14. BI reporting tables and views;
+15. Metabase PostgreSQL connection;
+16. basic Metabase dashboard;
+17. BI summary report.
 
 ## Current screenshots
 
-| File                                        | Version | Purpose                                                                                                      |
+| File | Version | Purpose |
 | ------------------------------------------- | ------- | ------------------------------------------------------------------------------------------------------------ |
-| `01_raw_messy_data.png`                     | v0.1.0  | Shows the original messy CSV input.                                                                          |
-| `02_cli_run.png`                            | v0.1.0  | Shows the CLI workflow running successfully.                                                                 |
-| `03_quality_report.png`                     | v0.1.0  | Shows the generated Markdown data quality report.                                                            |
-| `04_cleaned_output.png`                     | v0.1.0  | Shows the cleaned CSV output.                                                                                |
-| `05_pytest_pass.png`                        | v0.1.0  | Shows the test suite passing.                                                                                |
-| `06_docker_run.png`                         | v0.1.0  | Shows Docker build/run reproducibility.                                                                      |
-| `07_json_flatten_output.png`                | v0.1.0  | Shows nested JSON flattened into tabular output.                                                             |
-| `08_postgres_export.png`                    | v0.2.0  | Shows optional PostgreSQL export and table verification.                                                     |
-| `09_fastapi_swagger.png`                    | v0.3.0  | Shows Swagger UI at `http://127.0.0.1:8000/docs` with `GET /health` and `POST /validate`.                    |
-| `10_validate_response.png`                  | v0.3.0  | Shows a successful `/validate` response containing quality report JSON.                                      |
-| `11_generated_data_100k.png`                | v0.4.0  | Shows `generate_sample_data.py` generating 100,000 synthetic rows.                                           |
-| `12_analytics_outputs_and_duckdb_query.png` | v0.4.0  | Shows analytics output files and the DuckDB preview query result from the Parquet file.                      |
-| `13_benchmark_report.png`                   | v0.4.0  | Shows the generated benchmark report with row counts, runtime, output files, DuckDB preview, and scope note. |
+| `01_raw_messy_data.png` | v0.1.0 | Shows the original messy CSV input. |
+| `02_cli_run.png` | v0.1.0 | Shows the CLI workflow running successfully. |
+| `03_quality_report.png` | v0.1.0 | Shows the generated Markdown data quality report. |
+| `04_cleaned_output.png` | v0.1.0 | Shows the cleaned CSV output. |
+| `05_pytest_pass.png` | v0.1.0 | Shows the test suite passing. |
+| `06_docker_run.png` | v0.1.0 | Shows Docker build/run reproducibility. |
+| `07_json_flatten_output.png` | v0.1.0 | Shows nested JSON flattened into tabular output. |
+| `08_postgres_export.png` | v0.2.0 | Shows optional PostgreSQL export and table verification. |
+| `09_fastapi_swagger.png` | v0.3.0 | Shows Swagger UI at `http://127.0.0.1:8000/docs` with `GET /health` and `POST /validate`. |
+| `10_validate_response.png` | v0.3.0 | Shows a successful `/validate` response containing quality report JSON. |
+| `11_generated_data_100k.png` | v0.4.0 | Shows `generate_sample_data.py` generating 100,000 synthetic rows. |
+| `12_analytics_outputs_and_duckdb_query.png` | v0.4.0 | Shows analytics output files and the DuckDB preview query result from the Parquet file. |
+| `13_benchmark_report.png` | v0.4.0 | Shows the generated benchmark report with row counts, runtime, output files, DuckDB preview, and scope note. |
+| `14_bi_reporting_tables.png` | v0.5.0 | Shows PostgreSQL reporting tables and views created by the BI-ready demo. |
+| `15_metabase_connection.png` | v0.5.0 | Shows Metabase connected to the local PostgreSQL reporting database. |
+| `16_metabase_dashboard.png` | v0.5.0 | Shows a basic Metabase dashboard built from reporting views. |
+| `17_bi_summary_report.png` | v0.5.0 | Shows the generated BI summary report with table counts, views, output files, and scope note. |
 
 ## Capture notes for v0.1.0
 
@@ -48,11 +56,11 @@ data/input/messy_customers.csv
 
 Capture the raw input file showing typical data quality issues, such as:
 
-* inconsistent column names;
-* missing values;
-* duplicate rows;
-* invalid email values;
-* inconsistent formatting.
+- inconsistent column names;
+- missing values;
+- duplicate rows;
+- invalid email values;
+- inconsistent formatting.
 
 ### `02_cli_run.png`
 
@@ -80,12 +88,12 @@ data/output/csv/quality_report.md
 
 Capture the generated Markdown report showing:
 
-* row counts;
-* column counts;
-* missing values;
-* duplicate rows;
-* validation issues;
-* warning messages.
+- row counts;
+- column counts;
+- missing values;
+- duplicate rows;
+- validation issues;
+- warning messages.
 
 ### `04_cleaned_output.png`
 
@@ -162,7 +170,6 @@ Windows PowerShell:
 
 ```powershell
 $env:DATABASE_URL="postgresql+psycopg://dq_user:dq_password@localhost:5432/dq_demo"
-
 python -m dq_etl_starter.cli run `
   --input data/input/messy_customers.csv `
   --input-type csv `
@@ -174,8 +181,8 @@ python -m dq_etl_starter.cli run `
 
 Capture either:
 
-* the terminal output showing PostgreSQL export success; or
-* a SQL query result showing rows in the `cleaned_customers` table.
+- the terminal output showing PostgreSQL export success;
+- or a SQL query result showing rows in the `cleaned_customers` table.
 
 ## Capture notes for v0.3.0
 
@@ -195,13 +202,13 @@ http://127.0.0.1:8000/docs
 
 Make sure the screenshot shows both:
 
-* `GET /health`;
-* `POST /validate`.
+- `GET /health`;
+- `POST /validate`.
 
 If local Windows port binding fails, the API can also be verified through Docker:
 
 ```bash
-docker run --rm -p 8000:8000 data-quality-etl-starter:0.4.0 \
+docker run --rm -p 8000:8000 data-quality-etl-starter:0.5.0 \
   uvicorn dq_etl_starter.api:app --host 0.0.0.0 --port 8000
 ```
 
@@ -224,12 +231,12 @@ save_report = false
 
 Capture the response body showing fields such as:
 
-* `dataset_name`;
-* `row_count_raw`;
-* `row_count_cleaned`;
-* `missing_values_by_column`;
-* `duplicate_row_count`;
-* `issues`.
+- `dataset_name`;
+- `row_count_raw`;
+- `row_count_cleaned`;
+- `missing_values_by_column`;
+- `duplicate_row_count`;
+- `issues`.
 
 ## Capture notes for v0.4.0
 
@@ -255,10 +262,10 @@ python scripts/generate_sample_data.py `
 
 Capture the terminal output showing:
 
-* `Rows: 100,000`;
-* the seed;
-* the output path;
-* the synthetic data note.
+- `Rows: 100,000`;
+- the seed;
+- the output path;
+- the synthetic data note.
 
 ### `12_analytics_outputs_and_duckdb_query.png`
 
@@ -282,16 +289,16 @@ python scripts/run_analytics_demo.py `
 
 Capture the terminal output showing:
 
-* the run summary;
-* `cleaned_orders.csv`;
-* `cleaned_orders.parquet`;
-* `customer_summary.csv`;
-* `revenue_by_country.csv`;
-* `orders_by_month.csv`;
-* `source_system_summary.csv`;
-* `analytics_queries.sql`;
-* `benchmark_report.md`;
-* the `DuckDB preview query` section.
+- the run summary;
+- `cleaned_orders.csv`;
+- `cleaned_orders.parquet`;
+- `customer_summary.csv`;
+- `revenue_by_country.csv`;
+- `orders_by_month.csv`;
+- `source_system_summary.csv`;
+- `analytics_queries.sql`;
+- `benchmark_report.md`;
+- the `DuckDB preview query` section.
 
 ### `13_benchmark_report.png`
 
@@ -303,25 +310,128 @@ data/output/analytics/benchmark_report.md
 
 Capture the report showing:
 
-* raw row count;
-* cleaned row count;
-* analytics-ready row count;
-* validation issue count;
-* runtime seconds;
-* output file list;
-* DuckDB preview;
-* scope note.
+- raw row count;
+- cleaned row count;
+- analytics-ready row count;
+- validation issue count;
+- runtime seconds;
+- output file list;
+- DuckDB preview;
+- scope note.
+
+## Capture notes for v0.5.0
+
+### `14_bi_reporting_tables.png`
+
+Generate data, start PostgreSQL, and run the BI demo:
+
+```bash
+python scripts/generate_sample_data.py \
+  --rows 100000 \
+  --output data/generated/orders_100k.csv \
+  --seed 42
+
+docker compose up -d postgres
+
+python scripts/run_bi_demo.py \
+  --input data/generated/orders_100k.csv \
+  --schema data/expected/generated_order_schema.json \
+  --output-dir data/output/bi \
+  --db-url postgresql+psycopg://dq_user:dq_password@localhost:5432/dq_demo
+```
+
+Then run:
+
+```bash
+docker exec -it dq_etl_postgres psql -U dq_user -d dq_demo -c "\dt"
+docker exec -it dq_etl_postgres psql -U dq_user -d dq_demo -c "\dv"
+docker exec -it dq_etl_postgres psql -U dq_user -d dq_demo -c "SELECT * FROM vw_revenue_by_country LIMIT 10;"
+```
+
+Capture terminal output showing reporting tables and views such as:
+
+- `cleaned_orders`;
+- `customer_summary`;
+- `revenue_by_country`;
+- `orders_by_month`;
+- `source_system_summary`;
+- `vw_revenue_by_country`;
+- `vw_orders_by_month`;
+- `vw_source_system_quality`;
+- `vw_monthly_revenue_trend`.
+
+### `15_metabase_connection.png`
+
+Start Metabase:
+
+```bash
+docker compose up -d metabase
+```
+
+Open:
+
+```text
+http://localhost:3000
+```
+
+Connect to PostgreSQL with:
+
+```text
+Host: postgres
+Port: 5432
+Database: dq_demo
+Username: dq_user
+Password: dq_password
+```
+
+Capture the successful database connection page or a page showing the `dq_demo` database is available.
+
+### `16_metabase_dashboard.png`
+
+Create a small dashboard with cards such as:
+
+- revenue by country;
+- orders by month;
+- monthly revenue trend;
+- orders by source system;
+- average order value by country.
+
+Keep the dashboard simple. The screenshot only needs to prove that cleaned and reporting-ready data can feed a dashboard tool.
+
+### `17_bi_summary_report.png`
+
+Open:
+
+```text
+data/output/bi/bi_summary_report.md
+```
+
+Capture the report showing:
+
+- raw row count;
+- cleaned row count;
+- analytics-ready row count;
+- reporting tables created;
+- reporting views created;
+- output files;
+- recommended dashboard cards;
+- scope note.
 
 ## Notes
 
-Generated data and analytics outputs are intentionally local artifacts.
+Generated data, analytics outputs, and BI outputs are intentionally local artifacts.
 
 Do not commit:
 
 ```text
 data/generated/
 data/output/analytics/
+data/output/bi/
 *.parquet
+*.duckdb
+metabase.db/
+metabase-data/
+postgres_data/
 ```
 
 The repository should keep only source code, tests, documentation, lightweight sample files, and screenshots.

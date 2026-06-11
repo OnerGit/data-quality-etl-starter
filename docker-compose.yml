@@ -16,5 +16,17 @@ services:
       timeout: 5s
       retries: 10
 
+  metabase:
+    image: metabase/metabase:latest
+    container_name: dq_etl_metabase
+    ports:
+      - "3000:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - metabase_data:/metabase.db
+
 volumes:
   postgres_data:
+  metabase_data:
