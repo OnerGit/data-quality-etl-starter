@@ -21,3 +21,15 @@ dist/
 data/generated/
 data/output/analytics/
 *.parquet
+*.duckdb
+
+# v0.5 optional BI-ready demo local artifacts.
+data/output/bi/
+metabase.db/
+metabase-data/
+postgres_data/
+
+# Optional local-only public dataset validation artifacts.
+data/external/
+data/raw/public/
+data/output/public_dataset/
