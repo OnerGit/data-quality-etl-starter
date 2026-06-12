@@ -597,7 +597,7 @@ python scripts/run_ai_ready_demo.py \
   --input data/generated/orders_100k.csv \
   --schema data/expected/generated_order_schema.json \
   --output-dir data/output/ai_ready \
-  --dataset-name cleaned_orders
+  --dataset-name synthetic_orders
 ```
 
 Windows PowerShell:
@@ -607,7 +607,7 @@ python scripts/run_ai_ready_demo.py `
   --input data/generated/orders_100k.csv `
   --schema data/expected/generated_order_schema.json `
   --output-dir data/output/ai_ready `
-  --dataset-name cleaned_orders
+  --dataset-name synthetic_orders
 ```
 
 Expected outputs:
