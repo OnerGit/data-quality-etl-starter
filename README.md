@@ -760,6 +760,7 @@ The repository should keep source code, tests, documentation, lightweight sample
 - [Build a Python Data Quality ETL Starter for Messy CSV, Excel, JSON, and API-Style Data](https://dev.to/bob_oner/build-a-python-data-quality-etl-starter-for-messy-csv-excel-json-and-api-style-data-46b)
 - [From Data Quality Checks to Analytics-Ready Parquet with Python](https://dev.to/bob_oner/from-data-quality-checks-to-analytics-ready-parquet-with-python-39bd)
 - [From Clean Data to BI-Ready Reporting Tables with Python, PostgreSQL, and Metabase](https://dev.to/bob_oner/from-clean-data-to-bi-ready-reporting-tables-with-python-postgresql-and-metabase-5hjm)
+- [Preparing AI-Ready Data Without Calling an LLM API](https://dev.to/bob_oner/preparing-ai-ready-data-without-calling-an-llm-api-5daf)
 
 ## License
 
