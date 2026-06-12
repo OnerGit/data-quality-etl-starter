@@ -61,6 +61,30 @@ def _dataframe_to_markdown(df: pd.DataFrame, *, max_rows: int = 10) -> str:
     return "\n".join(lines)
 
 
+def _quote_identifier(identifier: str) -> str:
+    """Quote a PostgreSQL identifier from the local reporting table allowlist."""
+    return '"' + identifier.replace('"', '""') + '"'
+
+
+def _truncate_table_if_exists(connection: Any, table_name: str) -> bool:
+    """Truncate a PostgreSQL reporting table if it already exists.
+
+    This keeps the table object intact, so dependent reporting views and local
+    BI tools such as Metabase can keep referencing the same table and view
+    names across repeated demo runs.
+    """
+    table_exists = connection.execute(
+        text("SELECT to_regclass(:table_name)"),
+        {"table_name": table_name},
+    ).scalar()
+
+    if table_exists is None:
+        return False
+
+    connection.execute(text(f"TRUNCATE TABLE {_quote_identifier(table_name)}"))
+    return True
+
+
 def build_reporting_tables(cleaned_orders: pd.DataFrame) -> dict[str, pd.DataFrame]:
     """Build BI-ready reporting tables from cleaned analytics-ready orders.
 
@@ -85,8 +109,10 @@ def export_reporting_tables_to_postgres(
 ) -> dict[str, int]:
     """Export reporting tables to a local PostgreSQL reporting database.
 
-    The export uses pandas DataFrame.to_sql through SQLAlchemy. The default
-    behavior replaces demo tables so repeated local runs stay reproducible.
+    The default demo behavior keeps repeated local runs stable without dropping
+    existing reporting tables. When a reporting table already exists, it is
+    truncated and repopulated instead of dropped and recreated. This preserves
+    dependent reporting views and local Metabase dashboard references.
     """
     engine = create_db_engine(db_target="postgres", database_url=database_url)
     row_counts: dict[str, int] = {}
@@ -96,10 +122,16 @@ def export_reporting_tables_to_postgres(
             for table_name, df in tables.items():
                 if table_name not in REPORTING_TABLE_NAMES:
                     raise ValueError(f"Unsupported reporting table: {table_name}")
+
+                sql_if_exists = if_exists
+                if if_exists == "replace":
+                    table_existed = _truncate_table_if_exists(connection, table_name)
+                    sql_if_exists = "append" if table_existed else "fail"
+
                 df.to_sql(
                     table_name,
                     con=connection,
-                    if_exists=if_exists,
+                    if_exists=sql_if_exists,
                     index=False,
                     method="multi",
                     chunksize=chunksize,
