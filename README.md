@@ -20,7 +20,8 @@ Typical issues include:
 - no data quality report for handoff;
 - larger generated test data needed before a workflow can be trusted;
 - cleaned files that need to become analytics-ready CSV or Parquet outputs;
-- cleaned summary outputs that need to feed lightweight reporting or dashboard preparation.
+- cleaned summary outputs that need to feed lightweight reporting or dashboard preparation;
+- cleaned datasets that need to be documented for later BI, ML, or AI workflows.
 
 ## What this project does
 
@@ -42,6 +43,8 @@ This starter workflow can:
 - optionally query Parquet output locally with DuckDB;
 - optionally load reporting tables into PostgreSQL for lightweight BI/dashboard preparation;
 - optionally explore reporting tables through a local Metabase demo;
+- optionally prepare AI-ready data assets without calling an LLM;
+- optionally generate a data dictionary, schema profile, validation summary, feature-ready CSV, and embedding-ready text field extract;
 - run through a CLI, pytest tests, and Docker.
 
 ## Example workflow
@@ -50,17 +53,17 @@ Default local workflow:
 
 ```text
 messy CSV / Excel / JSON / mock API
-↓
+    ↓
 read and flatten
-↓
+    ↓
 normalize columns
-↓
+    ↓
 validate expected schema rules
-↓
+    ↓
 clean duplicate rows and text values
-↓
+    ↓
 export cleaned CSV + SQLite / optional PostgreSQL
-↓
+    ↓
 generate data quality report
 ```
 
@@ -68,13 +71,13 @@ Optional FastAPI validation path:
 
 ```text
 CSV / Excel / JSON file upload
-↓
+    ↓
 FastAPI /validate endpoint
-↓
+    ↓
 reuse the shared workflow service
-↓
+    ↓
 return quality report JSON
-↓
+    ↓
 optional local report file output
 ```
 
@@ -82,15 +85,15 @@ Optional analytics-ready path:
 
 ```text
 generated messy order data
-↓
+    ↓
 existing validation and cleaning logic
-↓
+    ↓
 cleaned CSV
-↓
+    ↓
 cleaned Parquet
-↓
+    ↓
 DuckDB query demo
-↓
+    ↓
 summary CSV tables + benchmark report
 ```
 
@@ -98,16 +101,38 @@ Optional BI-ready path:
 
 ```text
 generated messy order data
-↓
+    ↓
 existing validation and cleaning logic
-↓
+    ↓
 analytics-ready order rows
-↓
+    ↓
 PostgreSQL reporting tables
-↓
+    ↓
 lightweight SQL views
-↓
+    ↓
 optional Metabase local dashboard demo
+```
+
+Optional AI-ready data preparation path:
+
+```text
+generated messy order data
+    ↓
+existing validation and cleaning logic
+    ↓
+cleaned orders dataset
+    ↓
+schema profile JSON
+    ↓
+data dictionary JSON
+    ↓
+validation summary JSON
+    ↓
+feature-ready CSV
+    ↓
+embedding-ready text field extract
+    ↓
+AI-ready manifest + summary report
 ```
 
 ## Tech stack
@@ -135,6 +160,7 @@ data-quality-etl-starter/
 │   ├── expected/
 │   └── output/
 ├── docs/
+│   ├── ai_ready.md
 │   ├── api.md
 │   ├── analytics.md
 │   ├── bi.md
@@ -143,9 +169,11 @@ data-quality-etl-starter/
 ├── screenshots/
 ├── scripts/
 │   ├── generate_sample_data.py
+│   ├── run_ai_ready_demo.py
 │   ├── run_analytics_demo.py
 │   └── run_bi_demo.py
 ├── src/dq_etl_starter/
+│   ├── ai_ready.py
 │   ├── api.py
 │   ├── analytics.py
 │   ├── bi.py
@@ -185,9 +213,7 @@ Activate the virtual environment:
 ```bash
 # macOS / Linux
 source .venv/bin/activate
-```
 
-```powershell
 # Windows PowerShell
 .venv\Scripts\activate
 ```
@@ -344,7 +370,7 @@ python -m dq_etl_starter.cli run `
   --table-name cleaned_customers
 ```
 
-See [`docs/postgres.md`](docs/postgres.md) for full PostgreSQL instructions.
+See [docs/postgres.md](docs/postgres.md) for full PostgreSQL instructions.
 
 ## Optional FastAPI validation service
 
@@ -370,11 +396,11 @@ The API is a thin wrapper around the shared workflow service. The CLI workflow r
 Docker API run:
 
 ```bash
-docker run --rm -p 8000:8000 data-quality-etl-starter:0.5.0 \
+docker run --rm -p 8000:8000 data-quality-etl-starter:0.6.0 \
   uvicorn dq_etl_starter.api:app --host 0.0.0.0 --port 8000
 ```
 
-See [`docs/api.md`](docs/api.md) for full API instructions.
+See [docs/api.md](docs/api.md) for full API instructions.
 
 ## Optional analytics-ready export
 
@@ -453,7 +479,7 @@ ORDER BY total_revenue DESC
 LIMIT 10;
 ```
 
-See [`docs/analytics.md`](docs/analytics.md) for full analytics-ready export instructions.
+See [docs/analytics.md](docs/analytics.md) for full analytics-ready export instructions.
 
 ## Optional BI-ready demo
 
@@ -547,20 +573,79 @@ Username: dq_user
 Password: dq_password
 ```
 
-See [`docs/bi.md`](docs/bi.md) and [`docs/metabase.md`](docs/metabase.md) for full BI-ready demo instructions.
+See [docs/bi.md](docs/bi.md) and [docs/metabase.md](docs/metabase.md) for full BI-ready demo instructions.
+
+## Optional AI-ready data preparation
+
+v0.6.0 adds an optional AI-ready data preparation demo.
+
+It does not call an LLM, generate embeddings, train a model, or build a RAG chatbot. Instead, it prepares clean, validated, documented, machine-readable data assets that can be handed off to later BI, ML, or AI workflows.
+
+Generate 100,000 rows:
+
+```bash
+python scripts/generate_sample_data.py \
+  --rows 100000 \
+  --output data/generated/orders_100k.csv \
+  --seed 42
+```
+
+Run the AI-ready demo:
+
+```bash
+python scripts/run_ai_ready_demo.py \
+  --input data/generated/orders_100k.csv \
+  --schema data/expected/generated_order_schema.json \
+  --output-dir data/output/ai_ready \
+  --dataset-name cleaned_orders
+```
+
+Windows PowerShell:
+
+```powershell
+python scripts/run_ai_ready_demo.py `
+  --input data/generated/orders_100k.csv `
+  --schema data/expected/generated_order_schema.json `
+  --output-dir data/output/ai_ready `
+  --dataset-name cleaned_orders
+```
+
+Expected outputs:
+
+```text
+data/output/ai_ready/schema_profile.json
+data/output/ai_ready/data_dictionary.json
+data/output/ai_ready/validation_summary.json
+data/output/ai_ready/feature_ready_orders.csv
+data/output/ai_ready/embedding_ready_text_fields.csv
+data/output/ai_ready/ai_ready_manifest.json
+data/output/ai_ready/ai_ready_summary_report.md
+```
+
+The manifest explicitly records:
+
+```json
+{
+  "llm_api_called": false,
+  "embedding_generated": false,
+  "model_trained": false
+}
+```
+
+See [docs/ai_ready.md](docs/ai_ready.md) for full AI-ready data preparation instructions.
 
 ## Screenshots
 
 The screenshots support the README and documentation.
 
-Recommended v0.5 screenshots:
+Recommended v0.6 screenshots:
 
-- `screenshots/14_bi_reporting_tables.png`
-- `screenshots/15_metabase_connection.png`
-- `screenshots/16_metabase_dashboard.png`
-- `screenshots/17_bi_summary_report.png`
+- `screenshots/18_ai_ready_demo_run.png`
+- `screenshots/19_ai_ready_outputs.png`
+- `screenshots/20_data_dictionary_json.png`
+- `screenshots/21_ai_ready_summary_report.png`
 
-See [`screenshots/README.md`](screenshots/README.md) for capture notes.
+See [screenshots/README.md](screenshots/README.md) for capture notes.
 
 ## Tests
 
@@ -587,6 +672,13 @@ pytest tests/test_bi.py
 pytest tests/test_bi_reporting_sql.py
 ```
 
+Run v0.6 AI-ready tests:
+
+```bash
+pytest tests/test_ai_ready.py
+pytest tests/test_ai_ready_outputs.py
+```
+
 PostgreSQL integration tests should remain optional and should be skipped unless `DATABASE_URL` is available.
 
 ## Docker
@@ -594,8 +686,8 @@ PostgreSQL integration tests should remain optional and should be skipped unless
 Build and run the default workflow:
 
 ```bash
-docker build -t data-quality-etl-starter:0.5.0 -t data-quality-etl-starter:latest .
-docker run --rm data-quality-etl-starter:0.5.0
+docker build -t data-quality-etl-starter:0.6.0 -t data-quality-etl-starter:latest .
+docker run --rm data-quality-etl-starter:0.6.0
 ```
 
 The default Docker run remains a simple reproducible CLI workflow.
@@ -605,7 +697,7 @@ If your local network is unstable during dependency installation, you can pass a
 ```bash
 docker build \
   --build-arg PIP_INDEX_URL=https://pypi.org/simple \
-  -t data-quality-etl-starter:0.5.0 \
+  -t data-quality-etl-starter:0.6.0 \
   -t data-quality-etl-starter:latest \
   .
 ```
@@ -613,13 +705,13 @@ docker build \
 ## Version roadmap
 
 | Version | Main goal | Technical scope |
-| ------- | ---------------------------------------------- | ------------------------------------------------------------------------- |
+|---|---|---|
 | v0.1.0 | Local CLI workflow baseline | pandas, Pydantic, SQLite, Markdown report, pytest, Docker |
 | v0.2.0 | Optional PostgreSQL export | SQLAlchemy engine, PostgreSQL export, Docker Compose, integration docs |
 | v0.3.0 | FastAPI validation service | FastAPI, Pydantic request/response models, upload/validate endpoint |
 | v0.4.0 | Larger generated data + analytics-ready export | generated data, benchmark report, Parquet, DuckDB |
 | v0.5.0 | BI-ready optional demo | PostgreSQL reporting tables, SQL views, optional Metabase local dashboard demo |
-| v0.6.0 | AI-ready data preparation | data dictionary, schema profile, validation summary, feature-ready output |
+| v0.6.0 | AI-ready data preparation | data dictionary, schema profile, validation summary, feature-ready output, embedding-ready text extract |
 
 ## What this project is not
 
@@ -632,7 +724,12 @@ This project is intentionally not:
 - a Metabase production deployment;
 - an embedded analytics product;
 - a user management system;
+- an LLM application;
 - an LLM data cleaning tool;
+- an embedding generation pipeline;
+- a vector database project;
+- a machine learning training pipeline;
+- a prompt engineering framework;
 - a RAG chatbot;
 - an AI agent.
 
@@ -640,7 +737,7 @@ The design goal is small, runnable, testable, screenshot-ready, and easy to insp
 
 ## Generated data policy
 
-Generated data, analytics outputs, and BI demo outputs are intentionally local artifacts.
+Generated data, analytics outputs, BI demo outputs, and AI-ready demo outputs are intentionally local artifacts.
 
 Do not commit:
 
@@ -648,6 +745,7 @@ Do not commit:
 data/generated/
 data/output/analytics/
 data/output/bi/
+data/output/ai_ready/
 *.parquet
 *.duckdb
 metabase.db/
@@ -661,7 +759,7 @@ The repository should keep source code, tests, documentation, lightweight sample
 
 - [Build a Python Data Quality ETL Starter for Messy CSV, Excel, JSON, and API-Style Data](https://dev.to/bob_oner/build-a-python-data-quality-etl-starter-for-messy-csv-excel-json-and-api-style-data-46b)
 - [From Data Quality Checks to Analytics-Ready Parquet with Python](https://dev.to/bob_oner/from-data-quality-checks-to-analytics-ready-parquet-with-python-39bd)
-- [From Clean Data to BI-Ready Reporting Tables with Python, PostgreSQL, and Metabase](https://dev.to/bob_oner/from-clean-data-to-bi-ready-reporting-tables-with-python-postgresql-and-metabase-348p)
+- [From Clean Data to BI-Ready Reporting Tables with Python, PostgreSQL, and Metabase](https://dev.to/bob_oner/from-clean-data-to-bi-ready-reporting-tables-with-python-postgresql-and-metabase-5hjm)
 
 ## License
 

@@ -4,36 +4,47 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "data-quality-etl-starter"
-version = "0.5.0"
-description = "A small Python data quality ETL starter for messy CSV, Excel, JSON, mock API data, SQLite, optional PostgreSQL export, optional FastAPI validation, analytics-ready export, and optional BI-ready reporting demo."
+version = "0.6.0"
+description = "A small Python data quality ETL starter for messy CSV, Excel, JSON, mock API data, SQLite, optional PostgreSQL export, optional FastAPI validation, analytics-ready export, BI-ready reporting demo, and optional AI-ready data preparation."
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "MIT" }
 authors = [{ name = "Bob Oner" }]
 dependencies = [
-    "pandas>=2.2",
-    "pydantic>=2.7",
-    "openpyxl>=3.1",
-    "SQLAlchemy>=2.0",
+  "pandas>=2.2",
+  "pydantic>=2.7",
+  "openpyxl>=3.1",
+  "SQLAlchemy>=2.0",
 ]
 
 [project.optional-dependencies]
-api = [
-    "fastapi>=0.115",
-    "uvicorn[standard]>=0.30",
-    "python-multipart>=0.0.9",
-]
 dev = [
-    "pytest>=8.0",
-    "httpx>=0.27",
+  "pytest>=8.0",
 ]
 postgres = [
-    "psycopg[binary]>=3.2",
+  "psycopg[binary]>=3.2",
+]
+api = [
+  "fastapi>=0.115",
+  "uvicorn[standard]>=0.30",
+  "python-multipart>=0.0.9",
+  "httpx>=0.27",
 ]
 analytics = [
-    "duckdb>=1.0",
-    "pyarrow>=15.0",
-    "faker>=25.0",
+  "duckdb>=1.0",
+  "pyarrow>=15.0",
+  "faker>=25.0",
+]
+all = [
+  "pytest>=8.0",
+  "psycopg[binary]>=3.2",
+  "fastapi>=0.115",
+  "uvicorn[standard]>=0.30",
+  "python-multipart>=0.0.9",
+  "httpx>=0.27",
+  "duckdb>=1.0",
+  "pyarrow>=15.0",
+  "faker>=25.0",
 ]
 
 [project.scripts]
@@ -46,5 +57,5 @@ where = ["src"]
 pythonpath = ["src"]
 testpaths = ["tests"]
 markers = [
-    "integration: tests that require external services such as PostgreSQL",
+  "integration: tests that require external services such as PostgreSQL",
 ]

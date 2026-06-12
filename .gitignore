@@ -29,6 +29,9 @@ metabase.db/
 metabase-data/
 postgres_data/
 
+# v0.6 optional AI-ready data preparation local artifacts.
+data/output/ai_ready/
+
 # Optional local-only public dataset validation artifacts.
 data/external/
 data/raw/public/
